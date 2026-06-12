@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#00ff9d;--gd:rgba(0,255,157,0.1);--gm:rgba(0,255,157,0.22);
+  --r:#ff3b5c;--rd:rgba(255,59,92,0.1);
+  --a:#ffb700;--ad:rgba(255,183,0,0.1);
+  --b:#4af0ff;--bd:rgba(74,240,255,0.1);
+  --p:#c084fc;--pd:rgba(192,132,252,0.1);
+  --bg:#060912;--s:#0d1526;--s2:#131f35;--s3:#1a2840;
+  --br:#1e2e4a;--br2:#2a3f60;
+  --tx:#cbd5e8;--mt:#6b7fa8;
+  --fm:'Share Tech Mono',monospace;
+  --fd:'Orbitron',monospace;
+  --fb:'Exo 2',sans-serif;
+}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);min-height:600px;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.04) 2px,rgba(0,0,0,0.04) 4px);pointer-events:none;z-index:999}
+
+/* SCREENS */
+.screen{display:none;min-height:600px;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px}
+.screen.on{display:flex}
+
+/* SPLASH */
+#sSplash{background:var(--bg)}
+.logo{font-family:var(--fd);font-size:clamp(24px,5vw,48px);font-weight:900;color:var(--g);text-align:center;letter-spacing:4px;line-height:1.15;animation:glitch 4s infinite;text-shadow:0 0 30px rgba(0,255,157,0.35)}
+.logo small{display:block;font-size:0.42em;color:var(--mt);letter-spacing:7px;margin-top:6px}
+@keyframes glitch{0%,90%,100%{text-shadow:0 0 30px rgba(0,255,157,0.35);transform:none}92%{text-shadow:-3px 0 var(--r),3px 0 var(--b);transform:skewX(-1deg)}94%{text-shadow:3px 0 var(--r),-3px 0 var(--b);transform:skewX(1deg)}}
+.bar{width:260px;height:2px;background:var(--br);border-radius:2px;overflow:hidden;margin:16px 0}
+.barprog{height:100%;background:var(--g);width:0;box-shadow:0 0 10px var(--g);animation:ld 2.2s ease forwards}
+@keyframes ld{to{width:100%}}
+.blink{font-family:var(--fm);font-size:11px;color:var(--mt);letter-spacing:3px;animation:bl 1.2s step-end infinite}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+.splash-btns{display:flex;gap:14px;margin-top:20px;flex-wrap:wrap;justify-content:center;opacity:0;animation:fi 0.5s 2.4s forwards}
+@keyframes fi{to{opacity:1}}
+
+/* BUTTONS */
+.btn{padding:11px 28px;border:1px solid;border-radius:3px;font-family:var(--fd);font-size:11px;letter-spacing:3px;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+.btn-g{background:var(--gd);border-color:rgba(0,255,157,0.4);color:var(--g)}
+.btn-g:hover{background:var(--gm);box-shadow:0 0 16px rgba(0,255,157,0.2)}
+.btn-r{background:var(--rd);border-color:rgba(255,59,92,0.4);color:var(--r)}
+.btn-r:hover{background:rgba(255,59,92,0.18)}
+.btn-a{background:var(--ad);border-color:rgba(255,183,0,0.4);color:var(--a)}
+.btn-a:hover{background:rgba(255,183,0,0.18)}
+.btn-b{background:var(--bd);border-color:rgba(74,240,255,0.4);color:var(--b)}
+.btn-b:hover{background:rgba(74,240,255,0.18)}
+.btn-p{background:var(--pd);border-color:rgba(192,132,252,0.4);color:var(--p)}
+.btn-p:hover{background:rgba(192,132,252,0.18)}
+.btn-sm{padding:7px 16px;font-size:10px;letter-spacing:2px}
+.btn-lg{padding:14px 36px;font-size:12px;letter-spacing:4px}
+.btn:disabled{opacity:0.35;cursor:not-allowed}
+
+/* SETUP SCREENS */
+#sMenu,#sCreate,#sJoin,#sWait,#sGame,#sResults{width:100%;max-width:780px;margin:0 auto}
+#sMenu,#sCreate,#sJoin{align-items:center}
+#sWait,#sGame,#sResults{align-items:stretch;justify-content:flex-start}
+
+.setup-card{background:var(--s);border:1px solid var(--br);border-radius:6px;padding:32px;width:100%;max-width:440px}
+.setup-title{font-family:var(--fd);font-size:13px;font-weight:700;color:var(--g);letter-spacing:4px;margin-bottom:6px;text-align:center}
+.setup-sub{font-family:var(--fm);font-size:11px;color:var(--mt);letter-spacing:2px;text-align:center;margin-bottom:24px}
+
+/* INPUTS */
+.inp{width:100%;background:var(--s2);border:1px solid var(--br2);border-radius:3px;padding:12px 16px;color:var(--tx);font-family:var(--fb);font-size:14px;outline:none;transition:border-color 0.2s;margin-bottom:12px}
+.inp:focus{border-color:var(--g)}
+.inp::placeholder{color:var(--mt)}
+.sel{width:100%;background:var(--s2);border:1px solid var(--br2);border-radius:3px;padding:12px 16px;color:var(--tx);font-family:var(--fb);font-size:14px;outline:none;cursor:pointer;margin-bottom:12px}
+.inp-code{font-family:var(--fd);font-size:22px;letter-spacing:8px;text-align:center;text-transform:uppercase}
+
+/* LABELS */
+.lbl{font-family:var(--fm);font-size:10px;color:var(--mt);letter-spacing:3px;margin-bottom:6px;display:block}
+.err{font-family:var(--fm);font-size:11px;color:var(--r);margin-bottom:10px;display:none}
+
+/* HEADER */
+.hdr{position:sticky;top:0;z-index:100;background:rgba(6,9,18,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--br);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;width:100%}
+.hdr-logo{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--g);letter-spacing:3px}
+.hdr-logo span{color:var(--mt);font-weight:400}
+.hdr-r{display:flex;align-items:center;gap:14px}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 7px var(--g);animation:pu 2s infinite;margin-right:5px;vertical-align:middle}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:0.4}}
+.tmr{font-family:var(--fd);font-size:16px;font-weight:900;color:var(--a);letter-spacing:3px}
+.tmr.urg{color:var(--r);animation:pu 0.5s infinite}
+.tag{font-family:var(--fm);font-size:10px;color:var(--mt);letter-spacing:2px}
+
+/* NAV */
+.nav{background:var(--s);border-bottom:1px solid var(--br);padding:0 24px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;width:100%}
+.nav::-webkit-scrollbar{display:none}
+.ntab{padding:13px 16px;font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--mt);border:none;background:transparent;cursor:pointer;white-space:nowrap;transition:color 0.2s;border-bottom:2px solid transparent;margin-bottom:-1px}
+.ntab:hover{color:var(--tx)}
+.ntab.act{color:var(--g);border-bottom-color:var(--g)}
+.ntab.done{color:rgba(0,255,157,0.5)}
+
+/* MAIN */
+.main{padding:28px 24px;width:100%}
+
+/* SECTION */
+.sec{display:none;animation:fu 0.3s ease}
+.sec.on{display:block}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.sh{font-family:var(--fd);font-size:10px;font-weight:700;letter-spacing:5px;color:var(--g);margin-bottom:22px;padding-bottom:10px;border-bottom:1px solid var(--br);display:flex;align-items:center;gap:10px}
+.sh::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--br),transparent)}
+
+/* CARDS */
+.card{background:var(--s);border:1px solid var(--br);border-radius:4px;padding:20px;margin-bottom:14px;position:relative;transition:border-color 0.2s}
+.card:hover{border-color:var(--br2)}
+.ca-g{border-left:3px solid var(--g)}
+.ca-r{border-left:3px solid var(--r)}
+.ca-b{border-left:3px solid var(--b)}
+.ca-a{border-left:3px solid var(--a)}
+.ca-p{border-left:3px solid var(--p)}
+
+.ct{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--b);margin-bottom:10px;letter-spacing:1px}
+.ct.g{color:var(--g)}.ct.a{color:var(--a)}.ct.r{color:var(--r)}.ct.p{color:var(--p)}
+p{font-size:13px;color:var(--tx);line-height:1.75;margin-bottom:10px}
+p.mt{color:var(--mt);font-size:12px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+
+/* STAT */
+.stat{background:var(--s2);border:1px solid var(--br);border-radius:4px;padding:16px;text-align:center}
+.sv{font-family:var(--fd);font-size:26px;font-weight:900;color:var(--g);display:block;text-shadow:0 0 16px rgba(0,255,157,0.25)}
+.sl{font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:2px}
+
+/* BADGE */
+.bdg{display:inline-block;padding:2px 9px;font-family:var(--fm);font-size:9px;letter-spacing:1.5px;border-radius:2px}
+.bdg-g{background:var(--gd);border:1px solid rgba(0,255,157,0.3);color:var(--g)}
+.bdg-r{background:var(--rd);border:1px solid rgba(255,59,92,0.3);color:var(--r)}
+.bdg-a{background:var(--ad);border:1px solid rgba(255,183,0,0.3);color:var(--a)}
+.bdg-b{background:var(--bd);border:1px solid rgba(74,240,255,0.3);color:var(--b)}
+.bdg-p{background:var(--pd);border:1px solid rgba(192,132,252,0.3);color:var(--p)}
+
+/* INFO */
+.ib{border-radius:3px;padding:12px 14px;font-size:12px;line-height:1.7;margin:12px 0}
+.ib.b{background:var(--bd);border:1px solid rgba(74,240,255,0.2);color:var(--b)}
+.ib.a{background:var(--ad);border:1px solid rgba(255,183,0,0.2);color:var(--a)}
+.ib.r{background:var(--rd);border:1px solid rgba(255,59,92,0.2);color:var(--r)}
+.ib.g{background:var(--gd);border:1px solid rgba(0,255,157,0.2);color:var(--g)}
+
+/* PUZZLE */
+.cipher{text-align:center;padding:20px;background:var(--s2);border:1px solid var(--br);border-radius:3px;margin:12px 0;font-family:var(--fd);font-size:clamp(14px,3vw,22px);color:var(--a);letter-spacing:5px}
+.seq{text-align:center;padding:20px;background:var(--s2);border:1px solid var(--br);border-radius:3px;margin:12px 0;font-family:var(--fd);font-size:clamp(13px,2.5vw,20px);color:var(--a);letter-spacing:3px}
+.seq .miss{color:var(--r);font-size:1.25em}
+
+.pinp{width:100%;background:var(--s2);border:1px solid var(--br2);border-radius:3px;padding:11px 14px;color:var(--tx);font-family:var(--fm);font-size:13px;letter-spacing:2px;outline:none;transition:border-color 0.2s;margin-bottom:8px}
+.pinp:focus{border-color:var(--g);box-shadow:0 0 0 2px rgba(0,255,157,0.08)}
+.pinp::placeholder{color:var(--mt)}
+.prow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.res{padding:12px 16px;border-radius:3px;font-family:var(--fm);font-size:12px;margin-top:10px;display:none;animation:fu 0.3s ease}
+.res.on{display:block}
+.res.ok{background:var(--gd);border:1px solid rgba(0,255,157,0.35);color:var(--g)}
+.res.no{background:var(--rd);border:1px solid rgba(255,59,92,0.35);color:var(--r)}
+.res.mid{background:var(--ad);border:1px solid rgba(255,183,0,0.35);color:var(--a)}
+
+/* PISTAS */
+.pista{background:var(--s2);border:1px solid var(--br);border-radius:3px;padding:12px 14px;margin-bottom:7px;font-family:var(--fm);font-size:11px;color:var(--mt);display:flex;align-items:center;gap:10px;transition:all 0.2s}
+.pista.rev{color:var(--tx);border-color:var(--br2)}
+.pista.mine{border-color:rgba(255,183,0,0.4);color:var(--a)}
+.pt{min-width:80px;font-size:9px;letter-spacing:2px}
+
+/* DILEMA */
+.dops{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.dop{padding:24px 16px;border:2px solid;border-radius:4px;cursor:pointer;text-align:center;transition:all 0.3s;background:transparent}
+.dop.cop{border-color:rgba(0,255,157,0.4)}
+.dop.cop:hover,.dop.cop.sel{background:var(--gd);border-color:var(--g);box-shadow:0 0 20px rgba(0,255,157,0.12)}
+.dop.des{border-color:rgba(255,59,92,0.4)}
+.dop.des:hover,.dop.des.sel{background:var(--rd);border-color:var(--r);box-shadow:0 0 20px rgba(255,59,92,0.12)}
+.dop.dis{pointer-events:none;opacity:0.45}
+.doi{font-size:32px;margin-bottom:10px}
+.dol{font-family:var(--fd);font-size:12px;font-weight:700;letter-spacing:3px;margin-bottom:6px}
+.dop.cop .dol{color:var(--g)}.dop.des .dol{color:var(--r)}
+.dod{font-size:11px;color:var(--mt);line-height:1.5}
+
+/* MATRIX */
+.mx{width:100%;border-collapse:collapse;font-family:var(--fm);font-size:11px}
+.mx th{background:var(--s2);padding:10px 14px;border:1px solid var(--br);color:var(--mt);font-weight:400;letter-spacing:2px;font-size:9px}
+.mx td{padding:10px 14px;border:1px solid var(--br);vertical-align:middle}
+.mx td.rh{background:var(--s2);color:var(--mt);font-size:9px;letter-spacing:2px}
+.cg{background:rgba(0,255,157,0.05);color:var(--g)}
+.cm{background:rgba(255,183,0,0.05);color:var(--a)}
+.cb{background:rgba(255,59,92,0.05);color:var(--r)}
+
+/* DASHBOARD */
+.dtbl{width:100%;border-collapse:collapse}
+.dtbl th{font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:2px;padding:10px 14px;text-align:left;border-bottom:1px solid var(--br);background:var(--s2);font-weight:400}
+.dtbl td{padding:10px 14px;border-bottom:1px solid rgba(30,46,74,0.5);color:var(--tx);font-size:12px}
+.dtbl tr:hover td{background:var(--s2)}
+.sn{font-family:var(--fd);font-weight:900;font-size:16px}
+.r1c{color:var(--a)}.r2c{color:var(--mt)}.r3c{color:#cd7f32}
+.sbar{background:var(--s2);border-radius:2px;height:5px;overflow:hidden;margin-top:3px}
+.sb{height:100%;background:var(--g);border-radius:2px;transition:width 1s ease}
+
+/* PLAYERS LIST */
+.plist{display:flex;flex-direction:column;gap:6px}
+.pl{background:var(--s2);border:1px solid var(--br);border-radius:3px;padding:10px 14px;font-family:var(--fm);font-size:11px;display:flex;justify-content:space-between;align-items:center}
+.pl.me{border-color:rgba(0,255,157,0.3);background:rgba(0,255,157,0.04)}
+
+/* ROUND PROGRESS */
+.rpips{display:flex;gap:6px;margin-bottom:20px}
+.pip{flex:1;height:5px;border-radius:3px;background:var(--br);transition:background 0.4s}
+.pip.dn{background:var(--g);box-shadow:0 0 6px rgba(0,255,157,0.35)}
+.pip.ac{background:var(--a);animation:pu 1.5s infinite}
+
+/* WAIT SCREEN */
+#sWait{padding:28px 24px}
+.room-code{font-family:var(--fd);font-size:clamp(28px,6vw,52px);font-weight:900;color:var(--g);letter-spacing:10px;text-align:center;text-shadow:0 0 24px rgba(0,255,157,0.3);margin:12px 0}
+.wait-status{font-family:var(--fm);font-size:11px;color:var(--mt);letter-spacing:3px;text-align:center;animation:bl 1.5s step-end infinite}
+
+/* AI HINT */
+.ai-box{background:#030609;border:1px solid rgba(192,132,252,0.3);border-radius:3px;padding:12px 14px;margin-top:10px;font-size:12px;color:var(--p);line-height:1.7;display:none;animation:fu 0.3s ease}
+.ai-box.on{display:block}
+.ail{font-family:var(--fm);font-size:8px;color:rgba(192,132,252,0.5);letter-spacing:3px;margin-bottom:5px}
+.dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--p);margin:0 2px;animation:dt 1.4s ease-in-out infinite}
+.dots span:nth-child(2){animation-delay:0.2s}.dots span:nth-child(3){animation-delay:0.4s}
+@keyframes dt{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1);opacity:1}}
+
+/* PODIUM */
+.podium{text-align:center;padding:28px 0}
+.crown{font-size:52px;animation:cb 1s ease infinite alternate;display:block}
+@keyframes cb{from{transform:translateY(0)}to{transform:translateY(-6px)}}
+.pw{font-family:var(--fd);font-size:28px;font-weight:900;color:var(--a);text-shadow:0 0 24px rgba(255,183,0,0.4);margin:8px 0}
+.ps{font-family:var(--fd);font-size:16px;color:var(--g)}
+.wg{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.wc{background:var(--s);border:1px solid var(--br);border-radius:4px;padding:16px;text-align:center}
+.wc.gld{border-color:var(--a)}.wc.slv{border-color:var(--mt)}.wc.brz{border-color:var(--b)}
+.we{font-size:28px;margin-bottom:8px;display:block}
+.wt{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:6px}
+.wc.gld .wt{color:var(--a)}.wc.slv .wt{color:var(--mt)}.wc.brz .wt{color:var(--b)}
+.wd{font-size:11px;color:var(--mt);line-height:1.5}
+
+/* TEXTAREA */
+textarea.pinp{resize:vertical;min-height:70px;letter-spacing:0;line-height:1.6}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .g2,.g3,.g4,.dops,.wg{grid-template-columns:1fr}
+  .hdr{padding:0 14px}.nav{padding:0 8px}.main{padding:18px 14px}
+  .setup-card{padding:22px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ====== SPLASH ====== -->
+<div class="screen on" id="sSplash">
+  <div class="logo">PROYECTO<br>NÉMESIS<small>ESCAPE ROOM COGNITIVO CON IA</small></div>
+  <div class="bar"><div class="barprog"></div></div>
+  <div class="blink">INICIALIZANDO SISTEMA...</div>
+  <div class="splash-btns">
+    <button class="btn btn-g btn-lg" onclick="go('sMenu')">ACCEDER AL SISTEMA</button>
+  </div>
+</div>
+
+<!-- ====== MENU ====== -->
+<div class="screen" id="sMenu">
+  <div class="setup-card">
+    <div class="setup-title">SELECCIONA ROL</div>
+    <div class="setup-sub">¿Cómo participas en esta misión?</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="btn btn-a btn-lg" style="width:100%" onclick="go('sCreate')">⚙ SOY EL INSTRUCTOR — CREAR SALA</button>
+      <button class="btn btn-g btn-lg" style="width:100%" onclick="go('sJoin')">🎮 SOY AGENTE — UNIRME A SALA</button>
+    </div>
+    <div style="text-align:center;margin-top:16px">
+      <span style="font-family:var(--fm);font-size:10px;color:var(--mt);letter-spacing:2px">SENA CBI PALMIRA · INSTRUCTOR DAVID MARQUES</span>
+    </div>
+  </div>
+</div>
+
+<!-- ====== CREATE ====== -->
+<div class="screen" id="sCreate">
+  <div class="setup-card">
+    <div class="setup-title">CREAR SALA</div>
+    <div class="setup-sub">PANEL DEL INSTRUCTOR</div>
+    <span class="lbl">TU NOMBRE</span>
+    <input class="inp" id="cName" placeholder="Nombre del instructor..." maxlength="30">
+    <span class="lbl">CÓDIGO DE SALA (4 letras, o genera uno)</span>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <input class="inp inp-code" id="cCode" placeholder="ABCD" maxlength="4" style="margin-bottom:0;flex:1" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn btn-b btn-sm" onclick="genCode()">GENERAR</button>
+    </div>
+    <div class="err" id="cErr"></div>
+    <button class="btn btn-a btn-lg" style="width:100%" onclick="createRoom()">CREAR SALA →</button>
+    <button class="btn btn-sm" style="width:100%;margin-top:8px;border-color:var(--br2);color:var(--mt)" onclick="go('sMenu')">← VOLVER</button>
+  </div>
+</div>
+
+<!-- ====== JOIN ====== -->
+<div class="screen" id="sJoin">
+  <div class="setup-card">
+    <div class="setup-title">UNIRSE A SALA</div>
+    <div class="setup-sub">REGISTRO DE AGENTE</div>
+    <span class="lbl">TU NOMBRE</span>
+    <input class="inp" id="jName" placeholder="Nombre completo del agente..." maxlength="40">
+    <span class="lbl">CÓDIGO DE SALA (4 letras)</span>
+    <input class="inp inp-code" id="jCode" placeholder="ABCD" maxlength="4" oninput="this.value=this.value.toUpperCase()">
+    <span class="lbl">EQUIPO</span>
+    <select class="sel" id="jTeam">
+      <option value="">— Selecciona tu equipo —</option>
+      <option value="A">EQUIPO ALFA</option>
+      <option value="B">EQUIPO BETA</option>
+      <option value="C">EQUIPO GAMMA</option>
+      <option value="D">EQUIPO DELTA</option>
+      <option value="E">EQUIPO ÉPSILON</option>
+      <option value="F">EQUIPO ZETA</option>
+    </select>
+    <div class="err" id="jErr"></div>
+    <button class="btn btn-g btn-lg" style="width:100%" onclick="joinRoom()">UNIRME →</button>
+    <button class="btn btn-sm" style="width:100%;margin-top:8px;border-color:var(--br2);color:var(--mt)" onclick="go('sMenu')">← VOLVER</button>
+  </div>
+</div>
+
+<!-- ====== WAITING ROOM (INSTRUCTOR) ====== -->
+<div class="screen" id="sWait">
+  <div class="hdr" style="position:relative;top:auto">
+    <div class="hdr-logo">NÉMESIS <span>/ SALA DE ESPERA</span></div>
+    <div class="tag"><span class="dot"></span>INSTRUCTOR</div>
+  </div>
+  <div class="main" style="max-width:780px;margin:0 auto">
+    <div class="sh">SALA CREADA — ESPERANDO AGENTES</div>
+
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-family:var(--fm);font-size:10px;color:var(--mt);letter-spacing:3px;margin-bottom:6px">CÓDIGO DE SALA — COMPARTE ESTE CÓDIGO CON LOS AGENTES</div>
+      <div class="room-code" id="roomCodeDisplay">----</div>
+      <div class="wait-status" id="waitStatus">AGUARDANDO CONEXIONES...</div>
+    </div>
+
+    <div class="g2" style="margin-bottom:20px">
+      <div class="stat"><span class="sv" id="wPlayerCount">0</span><span class="sl">AGENTES CONECTADOS</span></div>
+      <div class="stat"><span class="sv" id="wRoundState">LOBBY</span><span class="sl">ESTADO DEL JUEGO</span></div>
+    </div>
+
+    <div class="card ca-b" style="margin-bottom:16px">
+      <div class="lbl" style="margin-bottom:10px">AGENTES REGISTRADOS</div>
+      <div class="plist" id="waitPlayersList"><div style="font-family:var(--fm);font-size:11px;color:var(--mt);letter-spacing:2px">Sin agentes aún...</div></div>
+    </div>
+
+    <div class="card ca-a">
+      <div class="ct a">⚙ CONTROL DE RONDAS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <button class="btn btn-b" onclick="instrSetRound(1)">▶ INICIAR RONDA 1<br><small style="font-size:9px;letter-spacing:1px">Código César · 3 min</small></button>
+        <button class="btn btn-b" onclick="instrSetRound(2)">▶ INICIAR RONDA 2<br><small style="font-size:9px;letter-spacing:1px">Secuencia · 4 min</small></button>
+        <button class="btn btn-b" onclick="instrSetRound(3)">▶ INICIAR RONDA 3<br><small style="font-size:9px;letter-spacing:1px">Alianzas · 4 min</small></button>
+        <button class="btn btn-r" onclick="instrSetRound(4)">⚠ RONDA DEL DILEMA<br><small style="font-size:9px;letter-spacing:1px">Voto secreto · 4 min</small></button>
+      </div>
+      <button class="btn btn-a" style="width:100%;margin-top:10px" onclick="instrSetRound(5)">🏆 MOSTRAR RESULTADOS FINALES</button>
+      <button class="btn btn-sm" style="width:100%;margin-top:8px;border-color:var(--br2);color:var(--mt)" onclick="instrGoGame()">IR AL PANEL DE JUEGO →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== GAME (PLAYER) ====== -->
+<div class="screen" id="sGame">
+  <div class="hdr" style="position:relative;top:auto">
+    <div class="hdr-logo">NÉMESIS <span id="gRoomTag">/ ---</span></div>
+    <div class="hdr-r">
+      <div class="tmr" id="timerEl" style="display:none">--:--</div>
+      <div class="tag"><span class="dot"></span><span id="gAgentTag">AGENTE</span></div>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="ntab act" onclick="tab('tLobby',this)">MISIÓN</button>
+    <button class="ntab" onclick="tab('tR1',this)" id="ntR1">RONDA 1</button>
+    <button class="ntab" onclick="tab('tR2',this)" id="ntR2">RONDA 2</button>
+    <button class="ntab" onclick="tab('tR3',this)" id="ntR3">RONDA 3</button>
+    <button class="ntab" onclick="tab('tDilema',this)" id="ntDil">DILEMA</button>
+    <button class="ntab" onclick="tab('tDash',this)" id="ntDash">DASHBOARD</button>
+  </div>
+  <div class="main" style="max-width:780px;margin:0 auto">
+
+    <!-- LOBBY TAB -->
+    <div class="sec on" id="tLobby">
+      <div class="sh">MÓDULO 01 — BRIEFING DE MISIÓN</div>
+      <div class="g4" style="margin-bottom:20px">
+        <div class="stat"><span class="sv">30</span><span class="sl">AGENTES</span></div>
+        <div class="stat"><span class="sv">6</span><span class="sl">EQUIPOS</span></div>
+        <div class="stat"><span class="sv">4</span><span class="sl">RONDAS</span></div>
+        <div class="stat"><span class="sv" id="myTotalScore">0</span><span class="sl">MIS PTS</span></div>
+      </div>
+      <div class="rpips" id="rpips">
+        <div class="pip" id="pip1"></div><div class="pip" id="pip2"></div>
+        <div class="pip" id="pip3"></div><div class="pip" id="pip4"></div>
+      </div>
+      <div class="card ca-g">
+        <div class="lbl">NARRATIVA CLASIFICADA · NIVEL ALFA</div>
+        <div class="ct g">🔐 Proyecto Némesis — El Agente Doble</div>
+        <p>Eres un agente de una <strong>organización secreta</strong>. Un infiltrado cifró los archivos del cuartel. En <em style="color:var(--a)">6 equipos de 5 agentes</em>, deben resolver acertijos cognitivos para desencriptar el código maestro.</p>
+        <p class="mt">La tensión real llega en la <strong style="color:var(--r)">Ronda del Dilema</strong>: cada agente vota en secreto si COOPERA o DESERTA para obtener ventaja individual.</p>
+      </div>
+      <div class="g2">
+        <div class="card ca-b">
+          <div class="lbl">TU IDENTIDAD</div>
+          <div style="font-family:var(--fd);font-size:16px;color:var(--b);font-weight:700;margin:6px 0" id="gMyName">—</div>
+          <div style="font-family:var(--fm);font-size:11px;color:var(--mt)" id="gMyTeam">EQUIPO: —</div>
+        </div>
+        <div class="card ca-a">
+          <div class="lbl">ESTADO</div>
+          <div style="font-family:var(--fd);font-size:13px;color:var(--a);font-weight:700;margin:6px 0" id="gState">EN ESPERA</div>
+          <div style="font-family:var(--fm);font-size:10px;color:var(--mt)">Espera instrucción del instructor</div>
+        </div>
+      </div>
+      <div class="ib b">💡 <strong>Sala:</strong> <span id="gRoomCode2">—</span> · Comparte este código con tu equipo.</div>
+    </div>
+
+    <!-- RONDA 1 TAB -->
+    <div class="sec" id="tR1">
+      <div class="sh">RONDA 01 — CÓDIGO DE CÉSAR INVERTIDO</div>
+      <div class="card ca-b">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 01 · 3 MINUTOS · ANÁLISIS LÓGICO</div>
+          <div class="ct">🔢 El Código de César Invertido</div></div>
+          <div><span class="bdg bdg-g">+50 pts</span><br><span class="bdg bdg-a" style="margin-top:3px">+20 vel.</span></div>
+        </div>
+        <p>Descifra el siguiente mensaje usando <strong>César con desplazamiento 3</strong>. Cada letra fue avanzada 3 posiciones.</p>
+        <div class="cipher">FRQILDQCD HV SRGHU</div>
+        <div class="ib b">💡 Para descifrar: retrocede 3 posiciones. F→C, R→O, Q→N...</div>
+        <div class="ib a" id="r1stateMsg" style="display:none"></div>
+        <div id="r1Form">
+          <div class="lbl" style="margin-top:12px">RESPUESTA DESCIFRADA</div>
+          <div class="prow">
+            <input class="pinp" id="r1Ans" placeholder="Escribe el mensaje descifrado..." maxlength="40" style="flex:1" onkeydown="if(event.key==='Enter')checkR1()">
+            <button class="btn btn-g" onclick="checkR1()" id="r1Btn">VERIFICAR</button>
+          </div>
+          <div class="res" id="r1Res"></div>
+          <div style="margin-top:12px">
+            <button class="btn btn-p btn-sm" onclick="aiHint(1)">🧠 PISTA DE IA</button>
+          </div>
+          <div class="ai-box" id="aiB1"><div class="ail">◈ IA — PISTA</div><div id="aiT1"><div class="dots"><span></span><span></span><span></span></div></div></div>
+        </div>
+        <div class="ib g" id="r1done" style="display:none">✅ ¡RONDA 1 COMPLETADA! Código descifrado correctamente.</div>
+      </div>
+      <!-- Tabla César -->
+      <div class="card">
+        <div class="lbl">TABLA REFERENCIA — CÉSAR +3</div>
+        <div style="overflow-x:auto;margin-top:8px">
+          <table style="border-collapse:collapse;font-family:var(--fm);font-size:10px;width:100%">
+            <tr id="trOrig"></tr><tr id="trCiph"></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RONDA 2 TAB -->
+    <div class="sec" id="tR2">
+      <div class="sh">RONDA 02 — LA SECUENCIA ROTA</div>
+      <div class="card ca-p">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 02 · 4 MINUTOS · RAZONAMIENTO ABSTRACTO</div>
+          <div class="ct p">🧩 La Secuencia Rota</div></div>
+          <div><span class="bdg bdg-g">+50 pts</span><br><span class="bdg bdg-p" style="margin-top:3px">+30 regla</span></div>
+        </div>
+        <p>Encuentra el número que falta y <em style="color:var(--p)">justifica la regla matemática</em> para obtener puntos extra.</p>
+        <div class="seq">2 — 6 — 12 — 20 — 30 — <span class="miss">?</span> — 56</div>
+        <div class="ib a" id="r2stateMsg" style="display:none"></div>
+        <div id="r2Form">
+          <div class="lbl" style="margin-top:12px">NÚMERO QUE FALTA</div>
+          <input class="pinp" id="r2Num" placeholder="Escribe el número..." type="number" min="1" max="999" style="max-width:220px">
+          <div class="lbl" style="margin-top:8px">EXPLICA LA REGLA (+30 pts)</div>
+          <textarea class="pinp" id="r2Rule" placeholder="Describe el patrón matemático que encontraste..."></textarea>
+          <div class="prow">
+            <button class="btn btn-g" onclick="checkR2()" id="r2Btn">ENVIAR RESPUESTA</button>
+            <button class="btn btn-p btn-sm" onclick="aiHint(2)">🧠 PISTA IA</button>
+          </div>
+          <div class="res" id="r2Res"></div>
+          <div class="ai-box" id="aiB2"><div class="ail">◈ IA — PISTA</div><div id="aiT2"><div class="dots"><span></span><span></span><span></span></div></div></div>
+        </div>
+        <div class="ib g" id="r2done" style="display:none">✅ ¡RONDA 2 COMPLETADA! Secuencia descifrada.</div>
+      </div>
+    </div>
+
+    <!-- RONDA 3 TAB -->
+    <div class="sec" id="tR3">
+      <div class="sh">RONDA 03 — EL MAPA DE ALIANZAS</div>
+      <div class="card ca-a">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 03 · 4 MINUTOS · NEGOCIACIÓN GRUPAL</div>
+          <div class="ct a">🗺️ El Mapa de Alianzas</div></div>
+          <div><span class="bdg bdg-g">+80 código</span><br><span class="bdg bdg-a" style="margin-top:3px">+20 pista</span></div>
+        </div>
+        <p>Cada equipo tiene <strong>una pista diferente y complementaria</strong>. Solo combinando las 6 pistas se revela el código maestro. Negocia con otros equipos.</p>
+        <div style="background:var(--s2);border:2px solid rgba(255,183,0,0.4);border-radius:4px;padding:16px;margin:12px 0">
+          <div class="lbl" style="color:var(--a)">TU PISTA — EQUIPO <span id="myTeamTag">—</span></div>
+          <div id="myClue" style="font-family:var(--fd);font-size:14px;color:var(--tx);margin-top:6px;line-height:1.5">—</div>
+        </div>
+        <div class="lbl" style="margin-bottom:8px">PISTAS DE OTROS EQUIPOS</div>
+        <div id="cluesList"></div>
+        <div class="ib a" style="margin-top:8px">⚠ Puedes retener tu pista para perjudicar rivales — pero esto se nota antes del Dilema.</div>
+        <div class="ib a" id="r3stateMsg" style="display:none"></div>
+        <div id="r3Form">
+          <div class="lbl" style="margin-top:12px">COMPARTIR PISTA CON OTRO EQUIPO (+20 pts)</div>
+          <div class="prow" style="margin-bottom:12px">
+            <select class="sel" id="shareWith" style="margin-bottom:0;flex:1">
+              <option value="">— Equipo destinatario —</option>
+              <option value="A">Equipo ALFA</option><option value="B">Equipo BETA</option>
+              <option value="C">Equipo GAMMA</option><option value="D">Equipo DELTA</option>
+              <option value="E">Equipo ÉPSILON</option><option value="F">Equipo ZETA</option>
+            </select>
+            <button class="btn btn-a btn-sm" onclick="sharePista()">COMPARTIR</button>
+          </div>
+          <div class="lbl">CÓDIGO MAESTRO COMPLETO</div>
+          <p class="mt" style="margin-bottom:6px">Formato: PISO-DÍGITOS-HORAS-SECTOR-CLAVE-FINAL (ej: 7-6-23-4-X-9)</p>
+          <div class="prow">
+            <input class="pinp" id="r3Ans" placeholder="7-6-23-4-X-9" maxlength="20" style="flex:1">
+            <button class="btn btn-g" onclick="checkR3()" id="r3Btn">VERIFICAR</button>
+          </div>
+          <div class="res" id="r3Res"></div>
+        </div>
+        <div class="ib g" id="r3done" style="display:none">✅ ¡CÓDIGO MAESTRO DESCIFRADO! Prepárate para el Dilema.</div>
+      </div>
+    </div>
+
+    <!-- DILEMA TAB -->
+    <div class="sec" id="tDilema">
+      <div class="sh">RONDA 04 — EL MOMENTO DE TRAICIÓN</div>
+      <div class="card ca-r">
+        <div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:6px">RONDA 04 · 4 MINUTOS · DILEMA CENTRAL</div>
+        <div class="ct r">⚠️ El Dilema de Confianza</div>
+        <p>Pura decisión estratégica. Vota en secreto: ¿cooperas o desertas?</p>
+        <div class="ib r">⚠ Tu voto es 100% anónimo. Solo el resultado agregado por equipo se revelará.</div>
+        <div id="dilVoting">
+          <div class="dops">
+            <button class="dop cop" onclick="castVote('cooperar')" id="btnCop">
+              <div class="doi">🤝</div><div class="dol">COOPERAR</div>
+              <div class="dod">Equipo mantiene puntos.<br>Si <strong>TODOS</strong> cooperan: +40 pts bonus para todos.</div>
+            </button>
+            <button class="dop des" onclick="castVote('desertar')" id="btnDes">
+              <div class="doi">🗡️</div><div class="dol">DESERTAR</div>
+              <div class="dod">Tú ganas +100 pts individuales.<br>Tu equipo pierde −60 pts.</div>
+            </button>
+          </div>
+          <div id="dilConfirm" style="display:none">
+            <div class="card" style="border-color:var(--a);background:var(--ad);text-align:center">
+              <div style="font-family:var(--fd);font-size:12px;color:var(--a);margin-bottom:8px">⚡ CONFIRMAR DECISIÓN</div>
+              <div id="dilConfText" style="font-size:12px;color:var(--tx);margin-bottom:14px"></div>
+              <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                <button class="btn btn-g btn-sm" onclick="confirmVote()" id="cfmBtn">✓ CONFIRMAR VOTO FINAL</button>
+                <button class="btn btn-sm" style="border-color:var(--br2);color:var(--mt)" onclick="cancelVote()">CANCELAR</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="dilDone" style="display:none">
+          <div class="ib g" id="dilDoneMsg">✅ Voto registrado. Esperando resultados del equipo...</div>
+        </div>
+      </div>
+      <!-- Matriz -->
+      <div class="card">
+        <div class="lbl">MATRIZ DE PAGOS</div>
+        <div style="overflow-x:auto;margin-top:10px">
+          <table class="mx">
+            <thead><tr><th style="width:140px"></th><th style="color:var(--g)">El otro COOPERA</th><th style="color:var(--r)">El otro DESERTA</th></tr></thead>
+            <tbody>
+              <tr><td class="rh" style="color:var(--g)">Tú COOPERAS</td><td class="cg">Ambos +40 pts<br><small style="color:var(--mt)">Óptimo colectivo</small></td><td class="cm">Tú 0 / Él +100<br><small style="color:var(--mt)">Fuiste explotado</small></td></tr>
+              <tr><td class="rh" style="color:var(--r)">Tú DESERTAS</td><td class="cm">Tú +100 / Él −60<br><small style="color:var(--mt)">Ganancia máxima</small></td><td class="cb">Ambos −20 pts<br><small style="color:var(--mt)">Peor resultado</small></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div class="sec" id="tDash">
+      <div class="sh">MÓDULO 06 — DASHBOARD</div>
+      <div id="dashPodium" style="display:none">
+        <div class="podium">
+          <span class="crown">🏆</span>
+          <div class="pw" id="podWinner">—</div>
+          <div class="ps" id="podScore">—</div>
+        </div>
+        <div class="wg">
+          <div class="wc gld"><span class="we">🏆</span><div class="wt">EQUIPO CAMPEÓN</div><div class="wd" id="wChamp">—</div></div>
+          <div class="wc slv"><span class="we">🕵️</span><div class="wt">AGENTE ÉLITE</div><div class="wd">Mayor puntaje individual</div></div>
+          <div class="wc brz"><span class="we">🤝</span><div class="wt">MÁS LEAL</div><div class="wd" id="wLoyal">—</div></div>
+        </div>
+      </div>
+      <div style="background:var(--s);border:1px solid var(--br);border-radius:4px;overflow:hidden;margin-bottom:16px">
+        <table class="dtbl">
+          <thead><tr><th>#</th><th>EQUIPO</th><th>R1</th><th>R2</th><th>R3</th><th>DILEMA</th><th>TOTAL</th></tr></thead>
+          <tbody id="dashBody"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <div class="lbl">MI PUNTAJE</div>
+        <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:6px">
+          <div><div style="font-family:var(--fd);font-size:32px;font-weight:900;color:var(--g);text-shadow:0 0 16px rgba(0,255,157,0.25)" id="myScoreBig">0</div>
+          <div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:2px">PUNTOS TOTALES</div></div>
+          <div style="flex:1;min-width:160px"><div id="myBreakdown" style="font-family:var(--fm);font-size:10px;color:var(--mt);line-height:2.2">R1:— R2:— R3:— Dilema:—</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ====== RESULTS ====== -->
+<div class="screen" id="sResults">
+  <div style="text-align:center;padding:32px 20px">
+    <div style="font-size:56px;animation:cb 1s ease infinite alternate">🏆</div>
+    <div style="font-family:var(--fd);font-size:28px;font-weight:900;color:var(--a);text-shadow:0 0 20px rgba(255,183,0,0.4);margin:10px 0" id="rWinner">—</div>
+    <div style="font-family:var(--fd);font-size:16px;color:var(--g)" id="rScore">—</div>
+    <button class="btn btn-g btn-lg" style="margin-top:24px" onclick="go('sMenu')">NUEVA PARTIDA</button>
+  </div>
+</div>
+
+<script>
+const TN={A:'ALFA',B:'BETA',C:'GAMMA',D:'DELTA',E:'ÉPSILON',F:'ZETA'};
+const TC={A:'var(--b)',B:'var(--g)',C:'var(--a)',D:'var(--p)',E:'var(--r)',F:'var(--b)'};
+const CLUES={
+  A:'"El cuartel está en el piso 7"',
+  B:'"El código tiene 6 dígitos"',
+  C:'"El acceso es a las 23 horas"',
+  D:'"El sector es el número 4"',
+  E:'"La clave adicional es X"',
+  F:'"El código termina en 9"'
+};
+const MASTER='7-6-23-4-X-9';
+
+let G={
+  role:'',roomCode:'',playerName:'',team:'',
+  round:0,r1Done:false,r2Done:false,r3Done:false,
+  voted:false,myVote:null,pendingVote:null,
+  myScore:{r1:0,r2:0,r3:0,d:0},
+  sharedTo:[],rcvdFrom:[],
+  firstR1:null,
+  timerInt:null,timerSec:0,
+  aiUsed:{1:false,2:false},
+  pollInt:null,
+  isInstructor:false
+};
+
+// ====== STORAGE HELPERS ======
+async function sGet(k){try{const r=await window.storage.get(k);return r?JSON.parse(r.value):null}catch{return null}}
+async function sSet(k,v){try{await window.storage.set(k,JSON.stringify(v))}catch{}}
+async function sGetShared(k){try{const r=await window.storage.get(k,true);return r?JSON.parse(r.value):null}catch{return null}}
+async function sSetShared(k,v){try{await window.storage.set(k,JSON.stringify(v),true)}catch{}}
+
+// ====== NAV ======
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+function tab(id,btn){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('act'));
+  document.getElementById(id).classList.add('on');
+  btn.classList.add('act');
+  if(id==='tDash') renderDash();
+}
+
+// ====== CODE GEN ======
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ';
+  let s='';for(let i=0;i<4;i++)s+=c[Math.floor(Math.random()*c.length)];
+  document.getElementById('cCode').value=s;
+}
+
+// ====== CREATE ROOM ======
+async function createRoom(){
+  const name=document.getElementById('cName').value.trim();
+  const code=document.getElementById('cCode').value.trim().toUpperCase();
+  const err=document.getElementById('cErr');
+  err.style.display='none';
+  if(!name){err.textContent='⚠ Ingresa tu nombre';err.style.display='block';return}
+  if(code.length!==4){err.textContent='⚠ El código debe tener 4 letras';err.style.display='block';return}
+
+  // Init room in shared storage
+  const roomKey='room_'+code;
+  const existing=await sGetShared(roomKey);
+  if(existing){err.textContent='⚠ Ese código ya existe. Usa otro.';err.style.display='block';return}
+
+  const room={code,instructor:name,round:0,players:[],scores:{A:{r1:0,r2:0,r3:0,d:0,desertores:0},B:{r1:0,r2:0,r3:0,d:0,desertores:0},C:{r1:0,r2:0,r3:0,d:0,desertores:0},D:{r1:0,r2:0,r3:0,d:0,desertores:0},E:{r1:0,r2:0,r3:0,d:0,desertores:0},F:{r1:0,r2:0,r3:0,d:0,desertores:0}},clueShares:{},firstR1:null,created:Date.now()};
+  await sSetShared(roomKey,room);
+
+  G.role='instructor';G.roomCode=code;G.isInstructor=true;G.playerName=name;
+  document.getElementById('roomCodeDisplay').textContent=code;
+  go('sWait');
+  startInstructorPoll();
+}
+
+// ====== JOIN ROOM ======
+async function joinRoom(){
+  const name=document.getElementById('jName').value.trim();
+  const code=document.getElementById('jCode').value.trim().toUpperCase();
+  const team=document.getElementById('jTeam').value;
+  const err=document.getElementById('jErr');
+  err.style.display='none';
+  if(!name){err.textContent='⚠ Ingresa tu nombre';err.style.display='block';return}
+  if(code.length!==4){err.textContent='⚠ El código debe tener 4 letras';err.style.display='block';return}
+  if(!team){err.textContent='⚠ Selecciona tu equipo';err.style.display='block';return}
+
+  const roomKey='room_'+code;
+  const room=await sGetShared(roomKey);
+  if(!room){err.textContent='⚠ Sala no encontrada. Verifica el código.';err.style.display='block';return}
+
+  // Add player
+  const pid=name+'_'+team+'_'+Date.now();
+  room.players=room.players||[];
+  room.players.push({id:pid,name,team,joined:Date.now()});
+  await sSetShared(roomKey,room);
+
+  G.role='player';G.roomCode=code;G.playerName=name;G.team=team;
+  G.round=room.round||0;
+
+  // Update UI
+  document.getElementById('gRoomTag').textContent='/ '+code;
+  document.getElementById('gRoomCode2').textContent=code;
+  document.getElementById('gAgentTag').textContent=name+' · '+TN[team];
+  document.getElementById('gMyName').textContent=name;
+  document.getElementById('gMyTeam').textContent='EQUIPO: '+TN[team];
+  document.getElementById('myTeamTag').textContent=TN[team];
+  document.getElementById('myClue').textContent=CLUES[team];
+
+  buildCluesList();
+  buildCaesarTable();
+  go('sGame');
+  startPlayerPoll();
+}
+
+// ====== INSTRUCTOR POLL ======
+function startInstructorPoll(){
+  updateWaitScreen();
+  G.pollInt=setInterval(updateWaitScreen,3000);
+}
+async function updateWaitScreen(){
+  const room=await sGetShared('room_'+G.roomCode);
+  if(!room)return;
+  const players=room.players||[];
+  document.getElementById('wPlayerCount').textContent=players.length;
+  document.getElementById('wRoundState').textContent=
+    ['LOBBY','RONDA 1','RONDA 2','RONDA 3','DILEMA','FINALIZADO'][room.round]||'LOBBY';
+  const list=document.getElementById('waitPlayersList');
+  if(!players.length){list.innerHTML='<div style="font-family:var(--fm);font-size:11px;color:var(--mt);letter-spacing:2px">Sin agentes aún...</div>';return}
+  list.innerHTML=players.map(p=>`<div class="pl"><span style="font-family:var(--fd);font-size:11px;color:${TC[p.team]}">${p.name}</span><span class="bdg" style="background:var(--s3);border:1px solid var(--br2);color:${TC[p.team]}">EQ. ${TN[p.team]}</span></div>`).join('');
+}
+
+// ====== INSTRUCTOR GO GAME ======
+function instrGoGame(){
+  document.getElementById('gRoomTag').textContent='/ '+G.roomCode;
+  document.getElementById('gRoomCode2').textContent=G.roomCode;
+  document.getElementById('gAgentTag').textContent=G.playerName+' · INSTRUCTOR';
+  document.getElementById('gMyName').textContent=G.playerName+' (Instructor)';
+  document.getElementById('gMyTeam').textContent='CONTROL TOTAL';
+  buildCaesarTable();
+  go('sGame');
+  clearInterval(G.pollInt);
+  G.pollInt=setInterval(playerPollTick,2000);
+}
+
+// ====== PLAYER POLL ======
+function startPlayerPoll(){
+  playerPollTick();
+  G.pollInt=setInterval(playerPollTick,2500);
+}
+async function playerPollTick(){
+  const room=await sGetShared('room_'+G.roomCode);
+  if(!room)return;
+  const newRound=room.round||0;
+
+  // Round changed
+  if(newRound!==G.round){
+    G.round=newRound;
+    handleRoundChange(newRound,room);
+  }
+
+  // Update scores from room
+  if(room.scores){
+    updateDashFromRoom(room);
+  }
+
+  // Update clue shares
+  if(room.clueShares&&G.team){
+    const rcvd=room.clueShares[G.team]||[];
+    rcvd.forEach(fromTeam=>{
+      if(!G.rcvdFrom.includes(fromTeam)){
+        G.rcvdFrom.push(fromTeam);
+        revealClue(fromTeam);
+      }
+    });
+  }
+}
+
+function handleRoundChange(r,room){
+  const stateLabels=['EN ESPERA','RONDA 1 ACTIVA','RONDA 2 ACTIVA','RONDA 3 ACTIVA','⚠ DILEMA ACTIVO','🏆 RESULTADOS'];
+  const el=document.getElementById('gState');
+  if(el)el.textContent=stateLabels[r]||'—';
+  updatePips(r);
+
+  const timers=[0,180,240,240,240,0];
+  if(timers[r])startTimer(timers[r]);
+
+  const msgs=['','⏱ RONDA 1 ACTIVA — 3 minutos. Descifren el código César.','⏱ RONDA 2 ACTIVA — 4 minutos. Encuentren el número y la regla.','⏱ RONDA 3 ACTIVA — 4 minutos. Negocien y completen el código.','⚠ DILEMA ACTIVO — 4 minutos. Voten en secreto.',''];
+  const msgId=['','r1stateMsg','r2stateMsg','r3stateMsg','',''];
+  if(msgs[r]&&msgId[r]){const m=document.getElementById(msgId[r]);if(m){m.textContent=msgs[r];m.style.display='block'}}
+
+  if(r===5){
+    computeAndShowResults(room);
+  }
+}
+
+// ====== INSTRUCTOR SET ROUND ======
+async function instrSetRound(r){
+  const room=await sGetShared('room_'+G.roomCode);
+  if(!room)return;
+  room.round=r;
+  await sSetShared('room_'+G.roomCode,room);
+  document.getElementById('wRoundState').textContent=['LOBBY','RONDA 1','RONDA 2','RONDA 3','DILEMA','FINALIZADO'][r]||'LOBBY';
+  handleRoundChange(r,room);
+  if(r>=1&&r<=4){const timers=[0,180,240,240,240];startTimer(timers[r]);}
+}
+
+// ====== TIMER ======
+function startTimer(sec){
+  clearInterval(G.timerInt);G.timerSec=sec;
+  const el=document.getElementById('timerEl');el.style.display='block';
+  function tick(){
+    const m=Math.floor(G.timerSec/60),s=G.timerSec%60;
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.className='tmr'+(G.timerSec<=30?' urg':'');
+    if(G.timerSec<=0){clearInterval(G.timerInt);el.textContent='⏰ FIN';return}
+    G.timerSec--;
+  }
+  tick();G.timerInt=setInterval(tick,1000);
+}
+
+// ====== PIPS ======
+function updatePips(r){
+  for(let i=1;i<=4;i++){
+    const p=document.getElementById('pip'+i);if(!p)return;
+    p.className='pip'+(i<r?' dn':i===r?' ac':'');
+  }
+}
+
+// ====== CAESAR TABLE ======
+function buildCaesarTable(){
+  const alpha='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const ro=document.getElementById('trOrig'),rc=document.getElementById('trCiph');
+  if(!ro||!rc)return;
+  ro.innerHTML='<td style="padding:4px 8px;border:1px solid var(--br);color:var(--mt);font-size:9px">ORIG</td>';
+  rc.innerHTML='<td style="padding:4px 8px;border:1px solid var(--br);color:var(--mt);font-size:9px">CIF</td>';
+  for(let i=0;i<26;i++){
+    ro.innerHTML+=`<td style="padding:3px 5px;border:1px solid var(--br);color:var(--tx);text-align:center;font-size:9px">${alpha[i]}</td>`;
+    rc.innerHTML+=`<td style="padding:3px 5px;border:1px solid var(--br);color:var(--a);text-align:center;font-size:9px">${alpha[(i+3)%26]}</td>`;
+  }
+}
+
+// ====== CLUES LIST ======
+function buildCluesList(){
+  const c=document.getElementById('cluesList');if(!c)return;
+  c.innerHTML=Object.keys(CLUES).map(t=>`<div class="pista${t===G.team?' mine':' '}" id="pista_${t}">
+    <span class="pt" style="color:${TC[t]}">EQ. ${TN[t]}</span>
+    <span id="pistaT_${t}">${t===G.team?CLUES[t]+' ← TU PISTA':'🔒 No recibida'}</span>
+  </div>`).join('');
+}
+
+function revealClue(fromTeam){
+  const el=document.getElementById('pistaT_'+fromTeam);
+  const wrap=document.getElementById('pista_'+fromTeam);
+  if(el){el.textContent=CLUES[fromTeam]+' (recibida)';wrap.classList.add('rev');wrap.classList.remove('pista-locked')}
+}
+
+// ====== SHARE PISTA ======
+async function sharePista(){
+  const target=document.getElementById('shareWith').value;
+  if(!target){alert('Selecciona un equipo.');return}
+  if(target===G.team){alert('No puedes compartir contigo mismo.');return}
+  if(G.sharedTo.includes(target)){alert('Ya compartiste con ese equipo.');return}
+
+  G.sharedTo.push(target);
+
+  // Update room: add share record
+  const room=await sGetShared('room_'+G.roomCode);
+  if(!room)return;
+  room.clueShares=room.clueShares||{};
+  room.clueShares[target]=room.clueShares[target]||[];
+  if(!room.clueShares[target].includes(G.team))room.clueShares[target].push(G.team);
+
+  // Score +20 for sharing
+  room.scores=room.scores||{};
+  room.scores[G.team]=room.scores[G.team]||{r1:0,r2:0,r3:0,d:0};
+  room.scores[G.team].r3=(room.scores[G.team].r3||0)+20;
+  await sSetShared('room_'+G.roomCode,room);
+
+  G.myScore.r3+=20;
+  updMyScore();
+
+  const s=document.getElementById('r3stateMsg');
+  if(s){s.textContent=`✅ Pista compartida con Equipo ${TN[target]}. +20 pts. Total compartidas: ${G.sharedTo.length}`;s.style.display='block'}
+  document.getElementById('shareWith').value='';
+}
+
+// ====== CHECK RONDA 1 ======
+async function checkR1(){
+  if(G.r1Done)return;
+  const ans=document.getElementById('r1Ans').value.trim().toUpperCase().replace(/[^A-Z\s]/g,'');
+  const res=document.getElementById('r1Res');
+  if(ans==='CONFIANZA ES PODER'){
+    const room=await sGetShared('room_'+G.roomCode);
+    let pts=50,speed=false;
+    if(room&&!room.firstR1){room.firstR1=G.team;await sSetShared('room_'+G.roomCode,room);pts+=20;speed=true}
+    if(room){
+      room.scores[G.team]=room.scores[G.team]||{r1:0,r2:0,r3:0,d:0};
+      room.scores[G.team].r1=(room.scores[G.team].r1||0)+pts;
+      await sSetShared('room_'+G.roomCode,room);
+    }
+    G.myScore.r1=pts;G.r1Done=true;
+    res.className='res ok on';
+    res.innerHTML=`✅ ¡CORRECTO! CONFIANZA ES PODER${speed?' — +20 pts de velocidad (primero en responder)':''} → +${pts} pts`;
+    document.getElementById('r1Form').style.display='none';
+    document.getElementById('r1done').style.display='block';
+    updMyScore();
+  } else if(ans.includes('CONFIANZA')||ans.includes('PODER')){
+    res.className='res mid on';res.textContent='⚠ Casi... tienes palabras correctas. Revisa el descifrado completo.';
+  } else {
+    res.className='res no on';res.textContent='❌ Incorrecto. Retrocede 3 posiciones por letra.';
+  }
+}
+
+// ====== CHECK RONDA 2 ======
+async function checkR2(){
+  if(G.r2Done)return;
+  const num=parseInt(document.getElementById('r2Num').value);
+  const rule=document.getElementById('r2Rule').value.trim().toLowerCase();
+  const res=document.getElementById('r2Res');
+  if(isNaN(num)){res.className='res no on';res.textContent='❌ Ingresa un número.';return}
+  if(num===42){
+    let pts=50;const hasRule=rule&&(rule.includes('n')||rule.includes('×')||rule.includes('multiplicac')||rule.includes('producto')||rule.includes('consecutiv')||rule.length>18);
+    let msg=`✅ ¡NÚMERO CORRECTO! 42`;
+    if(hasRule){pts+=30;msg+=` + regla correcta → n×(n+1). +${pts} pts total`}
+    else if(rule.length){msg+=` — regla insuficiente (+0 pts extra). Regla: n×(n+1).`}
+    else{msg+=` — sin justificación. +50 pts solo.`}
+    res.className='res ok on';res.innerHTML=msg;
+
+    const room=await sGetShared('room_'+G.roomCode);
+    if(room){room.scores[G.team]=room.scores[G.team]||{};room.scores[G.team].r2=(room.scores[G.team].r2||0)+pts;await sSetShared('room_'+G.roomCode,room)}
+    G.myScore.r2=pts;G.r2Done=true;
+    document.getElementById('r2Form').style.display='none';
+    document.getElementById('r2done').style.display='block';
+    updMyScore();
+  } else {
+    res.className='res no on';res.textContent='❌ Incorrecto. Analiza el patrón entre pares de números consecutivos.';
+  }
+}
+
+// ====== CHECK RONDA 3 ======
+async function checkR3(){
+  if(G.r3Done)return;
+  const ans=document.getElementById('r3Ans').value.trim().toUpperCase().replace(/\s/g,'');
+  const correct=MASTER.toUpperCase().replace(/\s/g,'');
+  const res=document.getElementById('r3Res');
+  if(ans===correct||ans.replace(/-/g,'')===correct.replace(/-/g,'')){
+    res.className='res ok on';res.innerHTML=`✅ ¡CÓDIGO MAESTRO CORRECTO! ${MASTER} → +80 pts`;
+    const room=await sGetShared('room_'+G.roomCode);
+    if(room){room.scores[G.team]=room.scores[G.team]||{};room.scores[G.team].r3=(room.scores[G.team].r3||0)+80;await sSetShared('room_'+G.roomCode,room)}
+    G.myScore.r3+=80;G.r3Done=true;
+    document.getElementById('r3Form').style.display='none';
+    document.getElementById('r3done').style.display='block';
+    updMyScore();
+  } else {
+    const pts=ans.split('-'),cpts=MASTER.split('-');
+    const m=pts.filter((p,i)=>p===cpts[i]).length;
+    if(m>=3){res.className='res mid on';res.textContent=`⚠ ${m}/6 valores correctos. Sigue negociando pistas.`}
+    else{res.className='res no on';res.textContent='❌ Incorrecto. Formato: PISO-DÍGITOS-HORAS-SECTOR-CLAVE-FINAL'}
+  }
+}
+
+// ====== DILEMA ======
+let pendingV=null;
+function castVote(v){
+  if(G.voted)return;
+  pendingV=v;
+  document.getElementById('btnCop').classList.toggle('sel',v==='cooperar');
+  document.getElementById('btnDes').classList.toggle('sel',v==='desertar');
+  document.getElementById('dilConfirm').style.display='block';
+  const t=v==='cooperar'
+    ?'🤝 Vas a <strong style="color:var(--g)">COOPERAR</strong>. Tu equipo mantiene puntos y puede recibir +40 pts si todos cooperan.'
+    :'🗡️ Vas a <strong style="color:var(--r)">DESERTAR</strong>. Recibirás +100 pts individuales pero tu equipo pierde −60 pts.';
+  document.getElementById('dilConfText').innerHTML=t;
+}
+function cancelVote(){pendingV=null;document.getElementById('btnCop').classList.remove('sel');document.getElementById('btnDes').classList.remove('sel');document.getElementById('dilConfirm').style.display='none'}
+async function confirmVote(){
+  if(!pendingV||G.voted)return;
+  G.voted=true;G.myVote=pendingV;
+  document.getElementById('dilVoting').style.display='none';
+  document.getElementById('dilDone').style.display='block';
+
+  const msg=pendingV==='cooperar'
+    ?'✅ Votaste <strong style="color:var(--g)">COOPERAR</strong>. Voto registrado anónimamente.'
+    :'🗡️ Votaste <strong style="color:var(--r)">DESERTAR</strong>. Voto registrado anónimamente.';
+  document.getElementById('dilDoneMsg').innerHTML=msg;
+
+  // Write vote to shared storage
+  const voteKey='votes_'+G.roomCode;
+  let votes=await sGetShared(voteKey)||{};
+  votes[G.playerName+'_'+G.team]={team:G.team,vote:pendingV};
+  await sSetShared(voteKey,votes);
+
+  if(pendingV==='desertar'){G.myScore.d=100;}
+  updMyScore();
+}
+
+// ====== SCORE HELPERS ======
+function updMyScore(){
+  const t=G.myScore.r1+G.myScore.r2+G.myScore.r3+G.myScore.d;
+  document.getElementById('myTotalScore').textContent=t;
+  document.getElementById('myScoreBig').textContent=t;
+  document.getElementById('myBreakdown').innerHTML=
+    `R1: ${G.myScore.r1||'—'}&nbsp;&nbsp;R2: ${G.myScore.r2||'—'}&nbsp;&nbsp;R3: ${G.myScore.r3||'—'}&nbsp;&nbsp;Dilema: ${G.myScore.d||'—'}`;
+}
+
+async function updateDashFromRoom(room){
+  if(!room.scores)return;
+  renderDashScores(room.scores);
+}
+
+async function renderDash(){
+  const room=await sGetShared('room_'+G.roomCode);
+  if(room&&room.scores)renderDashScores(room.scores);
+}
+
+function renderDashScores(scores){
+  const tbody=document.getElementById('dashBody');if(!tbody)return;
+  const teams=Object.keys(scores).map(t=>({team:t,total:(scores[t].r1||0)+(scores[t].r2||0)+(scores[t].r3||0)+(scores[t].d||0)}));
+  teams.sort((a,b)=>b.total-a.total);
+  const max=Math.max(...teams.map(t=>t.total),1);
+  tbody.innerHTML=teams.map((t,i)=>{
+    const s=scores[t.team]||{};
+    const tot=t.total;
+    const rc=i===0?'r1c':i===1?'r2c':i===2?'r3c':'';
+    const isMe=t.team===G.team;
+    const bw=Math.max(0,Math.round((tot/max)*100));
+    return`<tr style="${isMe?'background:rgba(0,255,157,0.04)':''}">
+      <td><span class="sn ${rc}">${i+1}</span></td>
+      <td><span style="font-family:var(--fd);font-size:11px;color:${TC[t.team]};letter-spacing:1px">EQ. ${TN[t.team]}</span>${isMe?'<span class="bdg bdg-g" style="margin-left:6px;font-size:8px">TÚ</span>':''}
+        <div class="sbar"><div class="sb" style="width:${bw}%"></div></div></td>
+      <td style="font-family:var(--fm);color:${(s.r1||0)>0?'var(--g)':'var(--mt)'}">${(s.r1||0)>0?'+'+s.r1:'—'}</td>
+      <td style="font-family:var(--fm);color:${(s.r2||0)>0?'var(--g)':'var(--mt)'}">${(s.r2||0)>0?'+'+s.r2:'—'}</td>
+      <td style="font-family:var(--fm);color:${(s.r3||0)>0?'var(--g)':'var(--mt)'}">${(s.r3||0)>0?'+'+s.r3:'—'}</td>
+      <td style="font-family:var(--fm);color:${(s.d||0)<0?'var(--r)':(s.d||0)>0?'var(--g)':'var(--mt)'}">${(s.d||0)!==0?((s.d>0?'+':'')+s.d):'—'}</td>
+      <td><span class="sn ${rc}">${tot}</span></td>
+    </tr>`}).join('');
+}
+
+async function computeAndShowResults(room){
+  // Tally votes
+  const voteKey='votes_'+G.roomCode;
+  const votes=await sGetShared(voteKey)||{};
+  const teamVotes={A:[],B:[],C:[],D:[],E:[],F:[]};
+  Object.values(votes).forEach(v=>{ if(teamVotes[v.team])teamVotes[v.team].push(v.vote) });
+
+  const scores=room.scores||{};
+  Object.keys(teamVotes).forEach(team=>{
+    const vs=teamVotes[team];
+    if(!vs.length){// No votes = simulate
+      const r=Math.random();
+      if(r<0.7)vs.push('cooperar');else vs.push('desertar');
+    }
+    const desertores=vs.filter(v=>v==='desertar').length;
+    scores[team]=scores[team]||{r1:0,r2:0,r3:0,d:0};
+    if(desertores===0){scores[team].d=(scores[team].d||0)+40}
+    else{scores[team].d=(scores[team].d||0)-(desertores*60)}
+    scores[team].desertores=desertores;
+  });
+  room.scores=scores;
+  await sSetShared('room_'+G.roomCode,room);
+
+  renderDashScores(scores);
+  showPodium(scores);
+}
+
+function showPodium(scores){
+  const teams=Object.keys(scores).map(t=>({team:t,total:(scores[t].r1||0)+(scores[t].r2||0)+(scores[t].r3||0)+(scores[t].d||0)}));
+  teams.sort((a,b)=>b.total-a.total);
+  const w=teams[0];
+  document.getElementById('dashPodium').style.display='block';
+  document.getElementById('podWinner').textContent='EQUIPO '+TN[w.team];
+  document.getElementById('podScore').textContent=w.total+' PUNTOS';
+  document.getElementById('wChamp').textContent='Equipo '+TN[w.team]+' con '+w.total+' pts';
+  const loyal=teams.slice().sort((a,b)=>(scores[a.team].desertores||0)-(scores[b.team].desertores||0))[0];
+  document.getElementById('wLoyal').textContent='Equipo '+TN[loyal.team]+' — todos cooperaron';
+}
+
+// ====== AI HINT ======
+async function aiHint(round){
+  if(G.aiUsed[round]){alert('Ya usaste la pista de IA para esta ronda.');return}
+  G.aiUsed[round]=true;
+  const box=document.getElementById('aiB'+round);const txt=document.getElementById('aiT'+round);
+  box.classList.add('on');
+  txt.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';
+  const prompts={
+    1:'Estoy en un escape room. Debo descifrar "FRQILDQCD HV SRGHU" con cifrado César desplazamiento 3. Dame UNA pista breve SIN darme la respuesta directa. Máximo 2 frases en español.',
+    2:'Estoy en un escape room. La secuencia es: 2 — 6 — 12 — 20 — 30 — ? — 56. Dame UNA pista sobre el patrón matemático SIN revelar la respuesta. Máximo 2 frases en español.'
+  };
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompts[round]}]})});
+    const d=await r.json();
+    txt.textContent=d.content?.[0]?.text||'Sin conexión con IA.';
+  }catch{txt.textContent='⚠ No se pudo conectar con IA. Piensa en el patrón paso a paso.'}
+}
+
+// ====== INIT ======
+setTimeout(()=>{},2600);
+</script>
+</body>
+</html>
