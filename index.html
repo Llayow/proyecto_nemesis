@@ -345,9 +345,9 @@ textarea.pinp{resize:vertical;min-height:70px;letter-spacing:0;line-height:1.6}
       <div class="ct a">⚙ CONTROL DE RONDAS</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
         <button class="btn btn-b" onclick="instrSetRound(1)">▶ INICIAR RONDA 1<br><small style="font-size:9px;letter-spacing:1px">Código César · 3 min</small></button>
-        <button class="btn btn-b" onclick="instrSetRound(2)">▶ INICIAR RONDA 2<br><small style="font-size:9px;letter-spacing:1px">Secuencia · 4 min</small></button>
-        <button class="btn btn-b" onclick="instrSetRound(3)">▶ INICIAR RONDA 3<br><small style="font-size:9px;letter-spacing:1px">Alianzas · 4 min</small></button>
-        <button class="btn btn-r" onclick="instrSetRound(4)">⚠ RONDA DEL DILEMA<br><small style="font-size:9px;letter-spacing:1px">Voto secreto · 4 min</small></button>
+        <button class="btn btn-b" onclick="instrSetRound(2)">▶ INICIAR RONDA 2<br><small style="font-size:9px;letter-spacing:1px">Secuencia · 3 min</small></button>
+        <button class="btn btn-b" onclick="instrSetRound(3)">▶ INICIAR RONDA 3<br><small style="font-size:9px;letter-spacing:1px">Alianzas · 3 min</small></button>
+        <button class="btn btn-r" onclick="instrSetRound(4)">⚠ RONDA DEL DILEMA<br><small style="font-size:9px;letter-spacing:1px">Voto secreto · 3 min</small></button>
       </div>
       <button class="btn btn-a" style="width:100%;margin-top:10px" onclick="instrSetRound(5)">🏆 MOSTRAR RESULTADOS FINALES</button>
       <button class="btn btn-sm" style="width:100%;margin-top:8px;border-color:var(--br2);color:var(--mt)" onclick="instrGoGame()">IR AL PANEL DE JUEGO →</button>
@@ -451,7 +451,7 @@ textarea.pinp{resize:vertical;min-height:70px;letter-spacing:0;line-height:1.6}
       <div class="sh">RONDA 02 — LA SECUENCIA ROTA</div>
       <div class="card ca-p">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 02 · 4 MINUTOS · RAZONAMIENTO ABSTRACTO</div>
+          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 02 · 3 MINUTOS · RAZONAMIENTO ABSTRACTO</div>
           <div class="ct p">🧩 La Secuencia Rota</div></div>
           <div><span class="bdg bdg-g">+50 pts</span><br><span class="bdg bdg-p" style="margin-top:3px">+30 regla</span></div>
         </div>
@@ -479,7 +479,7 @@ textarea.pinp{resize:vertical;min-height:70px;letter-spacing:0;line-height:1.6}
       <div class="sh">RONDA 03 — EL MAPA DE ALIANZAS</div>
       <div class="card ca-a">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:12px">
-          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 03 · 4 MINUTOS · NEGOCIACIÓN GRUPAL</div>
+          <div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:4px">RONDA 03 · 3 MINUTOS · NEGOCIACIÓN GRUPAL</div>
           <div class="ct a">🗺️ El Mapa de Alianzas</div></div>
           <div><span class="bdg bdg-g">+80 código</span><br><span class="bdg bdg-a" style="margin-top:3px">+20 pista</span></div>
         </div>
@@ -519,7 +519,7 @@ textarea.pinp{resize:vertical;min-height:70px;letter-spacing:0;line-height:1.6}
     <div class="sec" id="tDilema">
       <div class="sh">RONDA 04 — EL MOMENTO DE TRAICIÓN</div>
       <div class="card ca-r">
-        <div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:6px">RONDA 04 · 4 MINUTOS · DILEMA CENTRAL</div>
+        <div style="font-family:var(--fm);font-size:9px;color:var(--mt);letter-spacing:3px;margin-bottom:6px">RONDA 04 · 3 MINUTOS · DILEMA CENTRAL</div>
         <div class="ct r">⚠️ El Dilema de Confianza</div>
         <p>Pura decisión estratégica. Vota en secreto: ¿cooperas o desertas?</p>
         <div class="ib r">⚠ Tu voto es 100% anónimo. Solo el resultado agregado por equipo se revelará.</div>
@@ -628,7 +628,7 @@ let G={
   myScore:{r1:0,r2:0,r3:0,d:0},
   sharedTo:[],rcvdFrom:[],
   firstR1:null,
-  timerInt:null,timerSec:0,
+  timerInt:null,timerSec:0,timerRound:0,
   aiUsed:{1:false,2:false},
   pollInt:null,
   isInstructor:false
@@ -801,10 +801,49 @@ function handleRoundChange(r,room){
   if(el)el.textContent=stateLabels[r]||'—';
   updatePips(r);
 
-  const timers=[0,180,240,240,240,0];
-  if(timers[r])startTimer(timers[r]);
+  // Reset current round's form so teams can play it fresh (team stays the same)
+  if(r===1){
+    G.r1Done=false;
+    const f=document.getElementById('r1Form');if(f)f.style.display='block';
+    const d=document.getElementById('r1done');if(d)d.style.display='none';
+    const a=document.getElementById('r1Ans');if(a)a.value='';
+    const res=document.getElementById('r1Res');if(res)res.className='res';
+  }
+  if(r===2){
+    G.r2Done=false;
+    const f=document.getElementById('r2Form');if(f)f.style.display='block';
+    const d=document.getElementById('r2done');if(d)d.style.display='none';
+    const res=document.getElementById('r2Res');if(res)res.className='res';
+  }
+  if(r===3){
+    G.r3Done=false;
+    const f=document.getElementById('r3Form');if(f)f.style.display='block';
+    const d=document.getElementById('r3done');if(d)d.style.display='none';
+    const res=document.getElementById('r3Res');if(res)res.className='res';
+  }
+  if(r===4){
+    G.voted=false;G.myVote=null;
+    const dv=document.getElementById('dilVoting');if(dv)dv.style.display='block';
+    const dd=document.getElementById('dilDone');if(dd)dd.style.display='none';
+    const dc=document.getElementById('dilConfirm');if(dc)dc.style.display='none';
+    const bc=document.getElementById('btnCop');if(bc)bc.classList.remove('sel');
+    const bd=document.getElementById('btnDes');if(bd)bd.classList.remove('sel');
+  }
 
-  const msgs=['','⏱ RONDA 1 ACTIVA — 3 minutos. Descifren el código César.','⏱ RONDA 2 ACTIVA — 4 minutos. Encuentren el número y la regla.','⏱ RONDA 3 ACTIVA — 4 minutos. Negocien y completen el código.','⚠ DILEMA ACTIVO — 4 minutos. Voten en secreto.',''];
+  // Auto-switch to the right tab
+  const tabMap={1:'tR1',2:'tR2',3:'tR3',4:'tDilema',5:'tDash'};
+  if(tabMap[r]){
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+    document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('act'));
+    const sec=document.getElementById(tabMap[r]);if(sec)sec.classList.add('on');
+    const tabIds={1:'ntR1',2:'ntR2',3:'ntR3',4:'ntDil',5:'ntDash'};
+    const nt=document.getElementById(tabIds[r]);if(nt)nt.classList.add('act');
+  }
+
+  const timers=[0,180,180,180,180,0];
+  if(timers[r])startTimer(timers[r],r);
+
+  const msgs=['','⏱ RONDA 1 ACTIVA — 3 minutos. Descifren el código César.','⏱ RONDA 2 ACTIVA — 3 minutos. Encuentren el número y la regla.','⏱ RONDA 3 ACTIVA — 3 minutos. Negocien y completen el código.','⚠ DILEMA ACTIVO — 3 minutos. Voten en secreto.',''];
   const msgId=['','r1stateMsg','r2stateMsg','r3stateMsg','',''];
   if(msgs[r]&&msgId[r]){const m=document.getElementById(msgId[r]);if(m){m.textContent=msgs[r];m.style.display='block'}}
 
@@ -821,21 +860,69 @@ async function instrSetRound(r){
   await sSetShared('room_'+G.roomCode,room);
   document.getElementById('wRoundState').textContent=['LOBBY','RONDA 1','RONDA 2','RONDA 3','DILEMA','FINALIZADO'][r]||'LOBBY';
   handleRoundChange(r,room);
-  if(r>=1&&r<=4){const timers=[0,180,240,240,240];startTimer(timers[r]);}
+  if(r>=1&&r<=4){const timers=[0,180,180,180,180];startTimer(timers[r],r);}
 }
 
 // ====== TIMER ======
-function startTimer(sec){
-  clearInterval(G.timerInt);G.timerSec=sec;
+function startTimer(sec,round){
+  clearInterval(G.timerInt);G.timerSec=sec;G.timerRound=round||0;
   const el=document.getElementById('timerEl');el.style.display='block';
   function tick(){
     const m=Math.floor(G.timerSec/60),s=G.timerSec%60;
     el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
     el.className='tmr'+(G.timerSec<=30?' urg':'');
-    if(G.timerSec<=0){clearInterval(G.timerInt);el.textContent='⏰ FIN';return}
+    if(G.timerSec<=0){
+      clearInterval(G.timerInt);
+      el.textContent='⏰ FIN';
+      // Auto-advance to next round if instructor, or lock answers if player
+      if(G.isInstructor && G.timerRound>=1 && G.timerRound<=4){
+        const nextRound=G.timerRound+1;
+        // Show countdown before advancing
+        let c=3;
+        const cEl=document.createElement('div');
+        cEl.style.cssText='position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(6,9,18,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;font-family:var(--fd)';
+        cEl.innerHTML=`<div style="font-size:18px;color:var(--r);letter-spacing:4px;margin-bottom:12px">⏰ TIEMPO AGOTADO — RONDA ${G.timerRound}</div><div id="cntEl" style="font-size:60px;font-weight:900;color:var(--a)">3</div><div style="font-size:11px;color:var(--mt);letter-spacing:3px;margin-top:8px">AVANZANDO A SIGUIENTE RONDA...</div>`;
+        document.body.appendChild(cEl);
+        const cInt=setInterval(()=>{
+          c--;document.getElementById('cntEl').textContent=c;
+          if(c<=0){clearInterval(cInt);cEl.remove();instrSetRound(nextRound);}
+        },1000);
+      } else if(!G.isInstructor){
+        // Lock current round's form for player
+        lockRoundForm(G.timerRound);
+      }
+      return;
+    }
     G.timerSec--;
   }
   tick();G.timerInt=setInterval(tick,1000);
+}
+
+// Lock round form when time expires (player gets 0 pts for that round)
+function lockRoundForm(r){
+  if(r===1&&!G.r1Done){
+    const f=document.getElementById('r1Form');if(f)f.style.display='none';
+    const m=document.getElementById('r1stateMsg');
+    if(m){m.textContent='⏰ TIEMPO AGOTADO — Sin respuesta. 0 puntos en esta ronda.';m.style.display='block';m.style.color='var(--r)'}
+    G.r1Done=true;
+  }else if(r===2&&!G.r2Done){
+    const f=document.getElementById('r2Form');if(f)f.style.display='none';
+    const m=document.getElementById('r2stateMsg');
+    if(m){m.textContent='⏰ TIEMPO AGOTADO — Sin respuesta. 0 puntos en esta ronda.';m.style.display='block';m.style.color='var(--r)'}
+    G.r2Done=true;
+  }else if(r===3&&!G.r3Done){
+    const f=document.getElementById('r3Form');if(f)f.style.display='none';
+    const m=document.getElementById('r3stateMsg');
+    if(m){m.textContent='⏰ TIEMPO AGOTADO — Sin respuesta. 0 puntos en esta ronda.';m.style.display='block';m.style.color='var(--r)'}
+    G.r3Done=true;
+  }else if(r===4&&!G.voted){
+    // Auto-register as cooperar (no vote = 0 pts, no penalty)
+    G.voted=true;
+    const dv=document.getElementById('dilVoting');if(dv)dv.style.display='none';
+    const dd=document.getElementById('dilDone');if(dd)dd.style.display='block';
+    const dm=document.getElementById('dilDoneMsg');
+    if(dm)dm.innerHTML='⏰ TIEMPO AGOTADO — No votaste. 0 puntos en el dilema.';
+  }
 }
 
 // ====== PIPS ======
